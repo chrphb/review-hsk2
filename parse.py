@@ -10,6 +10,7 @@ def special_parse(line, second_separator):
 
 print("start")
 total = 0
+terms = []
 with open("/home/chris/brain/1-projects/python-hsk2/data/raw.txt",'r')  as reader:
     for line in reader.readlines():
         # skip the lines 'Juin 2010'
@@ -22,10 +23,13 @@ with open("/home/chris/brain/1-projects/python-hsk2/data/raw.txt",'r')  as reade
             if(line.find("#")!=-1):
                 r = special_parse(notraditional, "#")
                 print(r)
+                terms.append(r) 
             else:
                 r = special_parse(notraditional, " ")
                 print(r)
+                terms.append(r)
             total = total + 1
     print("ok")
+print(terms)
 print("end")
 print("out of",total)
