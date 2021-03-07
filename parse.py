@@ -42,7 +42,7 @@ def initial_load():
 
 # Create the initial study plan
 def create_study_plan(terms):
-    STUDYMAX = 20
+    STUDYMAX = 30
     revised = []
     count = 0
     mydate = datetime.today()
@@ -51,7 +51,7 @@ def create_study_plan(terms):
         if(count%STUDYMAX==0):
             mydate += timedelta(days=1)
         t = mydate.strftime('%Y-%m-%d')
-        print("add",t)
+        #print("add",t)
         term["study"] = t
         revised.append(term)
     return revised
@@ -67,24 +67,50 @@ def import_json():
         data = json.load(reader)
     return data
 
+# Trivial learning algorithm: if there is an error: next day, if this is OK, then day+2
+def with_next_study_date(term,input):
+    mydate = datetime.today()
+    if(input=="w"):
+        mydate += timedelta(days=1)
+        t = mydate.strftime('%Y-%m-%d')
+    else:
+        mydate += timedelta(days=2)
+        t = mydate.strftime('%Y-%m-%d')
+    term["study"]=t
+    return term
+
+# Main Play Loop
 def play(terms):
     print("Let's play !!!!!!!!! (q to quit)")
-    mydate = datetime.today().strftime('%Y-%m-%d')    
+    mydate = datetime.today().strftime('%Y-%m-%d')
+    study_revised = []
+    quit = False
     for term in terms:
-        if(term["study"]==mydate):
+        date_time_obj = datetime.strptime(term["study"], '%Y-%m-%d')
+        if(quit==False and date_time_obj <= datetime.today()):
             print(term["hanzi"], term["pinyin"], "?")  
             c=input("...")  
             if(c=="q"):
-                exit(0)
+                quit = True
+            else:
+                term = with_next_study_date(term,c)
+                print(term)
             print(term["fr"])
+        study_revised.append(term)
     print("Well Done !!!!")
+    return study_revised
 
-terms = initial_load()
-revised = create_study_plan(terms)
-#print(revised)
-export_json(revised)
-data = import_json()
-print(data)
-play(data)
-print("done")
+print("Start... 1 to init, 2 to play")
+select = input()
+if(select=="1"):
+    terms = initial_load()
+    revised = create_study_plan(terms)
+    #print(revised)
+    export_json(revised)
+if(select=="2"):
+    data = import_json()
+    #print(data)
+    study = play(data)
+    export_json(study)
+print("End")
 

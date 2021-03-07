@@ -1,2 +1,2 @@
-6
-Total:2
+8
+Total:8
